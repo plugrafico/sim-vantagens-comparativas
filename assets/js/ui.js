@@ -1,50 +1,52 @@
-function escolherPais(id) {
-    game.player = DB[id];
-    game.npc = id === 'A' ? DB.B : DB.A;
-    game.m1_npc_total = calcularCustoM1(game.npc.trigo, game.npc.aco);
+const ui = {
+    chart: null,
 
-    document.getElementById('selection-screen').classList.add('hidden');
-    document.getElementById('world1-screen').classList.remove('hidden');
-    document.getElementById('country-title').innerText = `Você é o ${game.player.nome}`;
-    document.getElementById('status-msg').innerText = "Simule a produção isolada (Mundo 1).";
-}
+    selectCountry(code) {
+        engine.activeCountry = code;
+        document.getElementById('app').style.display = 'block';
+        document.getElementById('country-name').innerText = engine.data[code].name;
+        document.getElementById('country-desc').innerText = engine.data[code].desc;
+        document.getElementById('cost-wheat').innerText = engine.data[code].wheatCost;
+        document.getElementById('cost-steel').innerText = engine.data[code].steelCost;
+        
+        this.renderChart(code);
+    },
 
-function validarMundo1() {
-    const t = parseInt(document.getElementById('input-trigo-m1').value);
-    const a = parseInt(document.getElementById('input-aco-m1').value);
-    const corretoT = 10 * game.player.trigo;
-    const corretoA = 8 * game.player.aco;
+    renderChart(code) {
+        const ctx = document.getElementById('productionChart').getContext('2d');
+        if (this.chart) this.chart.destroy();
 
-    if (t === corretoT && a === corretoA) {
-        game.m1_player_total = t + a;
-        document.getElementById('m1-feedback').innerText = `Correto! Seu custo total é ${game.m1_player_total} UM.`;
-        setTimeout(() => transicaoMundo2(), 1500);
-    } else {
-        document.getElementById('m1-feedback').innerText = `Erro. Lembre-se: Trigo custa ${game.player.trigo} UM e Aço ${game.player.aco} UM.`;
+        // Gera as 3 paralelas solicitadas nas fontes [1, 4]
+        const datasets = .map((budget, index) => ({
+            label: `Orçamento ${budget} UM`,
+            data: engine.calculateProductionMix(budget, code),
+            borderColor: `rgba(230, 126, 34, ${0.3 + (index * 0.3)})`,
+            fill: false,
+            showLine: true
+        }));
+
+        this.chart = new Chart(ctx, {
+            type: 'scatter',
+            data: { datasets },
+            options: {
+                scales: {
+                    x: { title: { display: true, text: 'Trigo (Ton)' }, min: 0, max: 50 },
+                    y: { title: { display: true, text: 'Aço (Ton)' }, min: 0, max: 50 }
+                }
+            }
+        });
+    },
+
+    updateComparisonTable(isoA, tradeA, isoB, tradeB) {
+        const body = document.getElementById('comparison-body');
+        const active = engine.activeCountry;
+        
+        const isoTotal = active === 'A' ? isoA : isoB;
+        const tradeTotal = active === 'A' ? tradeA : tradeB;
+
+        body.innerHTML = `
+            <tr><td>Total de Produção (10T Trigo + 8T Aço)</td><td>${isoTotal} UM</td><td class="cost-save">${tradeTotal} UM</td></tr>
+            <tr><td colspan="3"><strong>Economia Gerada: ${isoTotal - tradeTotal} UM</strong></td></tr>
+        `;
     }
-}
-
-function transicaoMundo2() {
-    document.getElementById('world1-screen').classList.add('hidden');
-    document.getElementById('world2-screen').classList.remove('hidden');
-    const msg = game.player.aco > game.npc.aco ? 
-        `NPC (${game.npc.nome}): "Eu produzo aço por apenas ${game.npc.aco} UM. Vamos negociar?"` :
-        `NPC (${game.npc.nome}): "Seu trigo custa ${game.player.trigo} UM, o meu custa ${game.npc.trigo} UM. Me venda seu trigo!"`;
-    
-    document.getElementById('npc-chat').innerText = msg;
-    document.getElementById('btn-trade').classList.remove('hidden');
-}
-
-function realizarTroca() {
-    processarLogicaComercio();
-    document.getElementById('world2-screen').classList.add('hidden');
-    document.getElementById('dashboard-screen').classList.remove('hidden');
-    
-    document.getElementById('m1-player').innerText = game.m1_player_total;
-    document.getElementById('m1-npc').innerText = game.m1_npc_total;
-    document.getElementById('m2-player').innerText = game.m2_player_total;
-    document.getElementById('m2-npc').innerText = game.m2_npc_total;
-    
-    const economia = game.m1_player_total - game.m2_player_total;
-    document.getElementById('conclusion').innerText = `Ao comercializar com base na Vantagem Comparativa, você economizou ${economia} UM!`;
-}
+};
