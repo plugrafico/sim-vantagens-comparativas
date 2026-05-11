@@ -2,63 +2,53 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Vantagem Comparativa</title>
+    <title>Simulação Econômica: Dinâmicas de Comércio</title>
     <link rel="stylesheet" href="assets/css/main.css">
+    <!-- Chart.js para renderizar as curvas de produção -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div id="game-container">
-        <header>
-            <h1>Simulador de Comércio Internacional</h1>
-            <p id="status-msg">Escolha sua nação para começar.</p>
-        </header>
+    <header>
+        <h1>Simulador de Dinâmica Econômica</h1>
+        <div id="country-selector">
+            <button onclick="ui.selectCountry('A')">Assumir País A (Agrário)</button>
+            <button onclick="ui.selectCountry('B')">Assumir País B (Industrial)</button>
+        </div>
+    </header>
 
-        <!-- SELEÇÃO DE PAÍS -->
-        <section id="selection-screen">
-            <button onclick="escolherPais('A')">País A (Agrário)</button>
-            <button onclick="escolherPais('B')">País B (Industrial)</button>
-        </section>
-
-        <!-- MUNDO 1: ISOLAMENTO -->
-        <section id="world1-screen" class="hidden">
-            <h2 id="country-title"></h2>
-            <p>Meta de Consumo: 10 Ton de Trigo e 8 Ton de Aço.</p>
-            <div class="input-group">
-                <label>Custo para 10 Ton de Trigo (UM):</label>
-                <input type="number" id="input-trigo-m1">
-                <label>Custo para 8 Ton de Aço (UM):</label>
-                <input type="number" id="input-aco-m1">
-                <button onclick="validarMundo1()">Calcular Autarquia</button>
+    <main id="app" style="display:none;">
+        <section id="dashboard">
+            <div class="stats-card">
+                <h2 id="country-name">País</h2>
+                <p id="country-desc"></p>
+                <div id="costs-display">
+                    <p>Custo Trigo: <span id="cost-wheat"></span> UM</p>
+                    <p>Custo Aço: <span id="cost-steel"></span> UM</p>
+                </div>
             </div>
-            <p id="m1-feedback"></p>
+
+            <div class="chart-container">
+                <canvas id="productionChart"></canvas>
+            </div>
         </section>
 
-        <!-- MUNDO 2: COMÉRCIO -->
-        <section id="world2-screen" class="hidden">
-            <h2>Mundo 2: Comércio Internacional</h2>
-            <div id="npc-chat" class="chat-box"></div>
-            <button id="btn-trade" class="hidden" onclick="realizarTroca()">Aceitar Troca e Especializar</button>
-        </section>
-
-        <!-- DASHBOARD FINAL -->
-        <section id="dashboard-screen" class="hidden">
-            <h2>Resultado Final: Comparativo de Eficiência</h2>
-            <table id="result-table">
+        <section id="trade-sim">
+            <h3>Cenário de Mundo: Isolamento vs. Comércio</h3>
+            <table id="results-table">
                 <thead>
                     <tr>
-                        <th>Cenário</th>
-                        <th>Seu Gasto (UM)</th>
-                        <th>Gasto NPC (UM)</th>
+                        <th>Produto</th>
+                        <th>Mundo 1 (Isolado)</th>
+                        <th>Mundo 2 (Comércio)</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr id="row-m1"><td>Mundo 1 (Isolado)</td><td id="m1-player">-</td><td id="m1-npc">-</td></tr>
-                    <tr id="row-m2"><td>Mundo 2 (Comércio)</td><td id="m2-player">-</td><td id="m2-npc">-</td></tr>
+                <tbody id="comparison-body">
+                    <!-- Preenchido via JS -->
                 </tbody>
             </table>
-            <div id="conclusion"></div>
+            <button id="trade-btn" onclick="engine.runTradeSimulation()">Simular Comércio Internacional</button>
         </section>
-    </div>
+    </main>
 
     <script src="assets/js/engine.js"></script>
     <script src="assets/js/ui.js"></script>
