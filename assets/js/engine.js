@@ -1,16 +1,16 @@
 const engine = {
     data: {
-        A: { name: "País A", desc: "Economia Agrária, recursos naturais abundantes.", wheatCost: 2, steelCost: 6 },
-        B: { name: "País B", desc: "Economia Industrial, alta sofisticação tecnológica.", wheatCost: 3, steelCost: 4 }
+        A: { name: "País A", desc: "Economia agrária, muitos recursos naturais e baixa sofisticação tecnológica.", wheatCost: 2, steelCost: 6 },
+        B: { name: "País B", desc: "Economia industrial, alta sofisticação tecnológica e produtividade elevada.", wheatCost: 3, steelCost: 4 }
     },
     activeCountry: null,
 
+    // Calcula os pontos extremos da curva de possibilidades para orçamentos de 30, 60 e 90 UM [1, 3]
     calculateProductionMix(budget, countryCode) {
         const country = this.data[countryCode];
-        // Retorna os pontos para a linha paralela: (Budget/WheatCost, 0) e (0, Budget/SteelCost)
         return [
-            { x: budget / country.wheatCost, y: 0 },
-            { x: 0, y: budget / country.steelCost }
+            { x: budget / country.wheatCost, y: 0 }, // Máximo de Trigo
+            { x: 0, y: budget / country.steelCost }  // Máximo de Aço
         ];
     },
 
@@ -18,15 +18,14 @@ const engine = {
         const targetWheat = 10;
         const targetSteel = 8;
 
-        // Mundo 1: Produção Isolada (Baseado nos exercícios [5, 6])
-        const costA_Iso = (targetWheat * this.data.A.wheatCost) + (targetSteel * this.data.A.steelCost);
-        const costB_Iso = (targetWheat * this.data.B.wheatCost) + (targetSteel * this.data.B.steelCost);
+        // Mundo 1: Produção Isolada (Baseado nos custos de cada país) [1, 2]
+        const costA_Iso = (targetWheat * this.data.A.wheatCost) + (targetSteel * this.data.A.steelCost); // 20 + 48 = 68
+        const costB_Iso = (targetWheat * this.data.B.wheatCost) + (targetSteel * this.data.B.steelCost); // 30 + 32 = 62
 
-        // Mundo 2: Especialização e Comércio (Preço de Custo [2, 4])
-        // A produz apenas trigo (20T), B produz apenas aço (16T)
-        const costA_Trade = (targetWheat * this.data.A.wheatCost) + (targetSteel * this.data.B.steelCost);
-        const costB_Trade = (targetWheat * this.data.A.wheatCost) + (targetSteel * this.data.B.steelCost);
+        // Mundo 2: Especialização e Comércio (Preço de Custo) [3, 4]
+        // Ambos agora obtêm o trigo a 2 UM (custo de A) e o aço a 4 UM (custo de B) [5, 6]
+        const cost_Trade = (targetWheat * 2) + (targetSteel * 4); // 20 + 32 = 52
 
-        ui.updateComparisonTable(costA_Iso, costA_Trade, costB_Iso, costB_Trade);
+        ui.updateComparisonTable(costA_Iso, cost_Trade, costB_Iso, cost_Trade);
     }
 };
