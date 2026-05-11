@@ -16,22 +16,25 @@ const ui = {
         const ctx = document.getElementById('productionChart').getContext('2d');
         if (this.chart) this.chart.destroy();
 
-        // Gera as 3 paralelas solicitadas nas fontes [1, 4]
-        const datasets = .map((budget, index) => ({
+        // Representa as paralelas de 30, 60 e 90 UM conforme solicitado nas fontes [1, 3]
+        const budgets = ;
+        const datasets = budgets.map((budget, index) => ({
             label: `Orçamento ${budget} UM`,
             data: engine.calculateProductionMix(budget, code),
-            borderColor: `rgba(230, 126, 34, ${0.3 + (index * 0.3)})`,
-            fill: false,
-            showLine: true
+            borderColor: `rgba(44, 62, 80, ${0.3 + (index * 0.3)})`,
+            borderWidth: 2,
+            showLine: true,
+            pointRadius: 5
         }));
 
         this.chart = new Chart(ctx, {
             type: 'scatter',
             data: { datasets },
             options: {
+                responsive: true,
                 scales: {
-                    x: { title: { display: true, text: 'Trigo (Ton)' }, min: 0, max: 50 },
-                    y: { title: { display: true, text: 'Aço (Ton)' }, min: 0, max: 50 }
+                    x: { title: { display: true, text: 'Trigo (Toneladas)' }, min: 0, max: 50 },
+                    y: { title: { display: true, text: 'Aço (Toneladas)' }, min: 0, max: 50 }
                 }
             }
         });
@@ -45,8 +48,16 @@ const ui = {
         const tradeTotal = active === 'A' ? tradeA : tradeB;
 
         body.innerHTML = `
-            <tr><td>Total de Produção (10T Trigo + 8T Aço)</td><td>${isoTotal} UM</td><td class="cost-save">${tradeTotal} UM</td></tr>
-            <tr><td colspan="3"><strong>Economia Gerada: ${isoTotal - tradeTotal} UM</strong></td></tr>
+            <tr>
+                <td>Cenário Atual (${active === 'A' ? 'Agrário' : 'Industrial'})</td>
+                <td>${isoTotal} UM</td>
+                <td class="cost-save">${tradeTotal} UM</td>
+            </tr>
+            <tr style="background: #eafaf1">
+                <td colspan="3"><strong>Economia com Comércio: ${isoTotal - tradeTotal} UM</strong></td>
+            </tr>
         `;
     }
 };
+
+window.ui = ui; // Garante visibilidade global
