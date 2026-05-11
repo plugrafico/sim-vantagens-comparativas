@@ -4,25 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulação: Vantagens Comparativas</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1, h2 { color: #2c3e50; text-align: center; }
-        .screen { display: none; }
-        .active { display: block; }
-        button { background-color: #3498db; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; margin: 10px; transition: 0.3s; }
-        button:hover { background-color: #2980b9; }
-        .btn-country { font-size: 20px; padding: 15px 30px; width: 45%; }
-        .flex-center { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
-        .card { background: #e8f4f8; padding: 15px; border-left: 5px solid #3498db; margin-bottom: 20px; }
-        input[type="number"] { padding: 8px; font-size: 16px; width: 80px; margin-left: 10px; border: 1px solid #ccc; border-radius: 4px; }
-        .feedback { font-weight: bold; margin-top: 10px; display: block; }
-        .success { color: #27ae60; }
-        .error { color: #c0392b; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-        th { background-color: #2c3e50; color: white; }
-    </style>
+    <link rel="stylesheet" href="assets/css/main.css">
 </head>
 <body>
 
@@ -31,8 +13,8 @@
         <h1>Simulação de Comércio Internacional</h1>
         <p style="text-align: center;">Escolha qual nação você irá representar nesta simulação:</p>
         <div class="flex-center">
-            <button class="btn-country" onclick="chooseCountry('A')">PAÍS A<br><small>Economia Agrária</small></button>
-            <button class="btn-country" onclick="chooseCountry('B')">PAÍS B<br><small>Economia Industrial</small></button>
+            <button class="btn-country" onclick="handleCountryChoice('A')">PAÍS A<br><small>Economia Agrária</small></button>
+            <button class="btn-country" onclick="handleCountryChoice('B')">PAÍS B<br><small>Economia Industrial</small></button>
         </div>
     </div>
 
@@ -46,13 +28,9 @@
         
         <hr>
         <h3>Desafio 1: Calcule seus custos</h3>
-        <p>Quanto lhe custa produzir <strong>10 Ton de trigo</strong>? 
-            <input type="number" id="input-10-wheat"> UM
-        </p>
-        <p>Quanto lhe custa produzir <strong>8 Ton de aço</strong>? 
-            <input type="number" id="input-8-steel"> UM
-        </p>
-        <button onclick="checkPhase1()">Verificar Respostas</button>
+        <p>Quanto lhe custa produzir <strong>10 Ton de trigo</strong>? <input type="number" id="input-10-wheat"> UM</p>
+        <p>Quanto lhe custa produzir <strong>8 Ton de aço</strong>? <input type="number" id="input-8-steel"> UM</p>
+        <button onclick="handleCheckPhase1()">Verificar Respostas</button>
         <span id="feedback-p1" class="feedback"></span>
 
         <div id="phase1-chart-challenge" style="display: none; margin-top: 20px;">
@@ -61,7 +39,7 @@
             <p>Se você tivesse exatamente <strong>60 UM</strong>, qual o MÁXIMO de cada bem você poderia produzir se dedicasse 100% dos recursos a ele?</p>
             <p>Máximo de Trigo: <input type="number" id="input-max-wheat"> Ton</p>
             <p>Máximo de Aço: <input type="number" id="input-max-steel"> Ton</p>
-            <button onclick="checkPhase1Chart()">Traçar Linha</button>
+            <button onclick="handleCheckChart()">Traçar Linha</button>
             <span id="feedback-p1-chart" class="feedback"></span>
         </div>
     </div>
@@ -69,20 +47,20 @@
     <div id="screen-phase2" class="screen">
         <h2>Fase 2: O Comércio Internacional</h2>
         <div class="card">
-            <p>Considere agora que existe comércio internacional. Você encontrou um país parceiro!</p>
+            <p>Considere agora que existe comércio internacional. Você encontrou um parceiro!</p>
             <p id="p2-trade-desc"></p>
         </div>
 
         <h3>Desafio 3: O Novo Cenário</h3>
         <p id="p2-question-1"></p>
         <p id="p2-question-2"></p>
-        <button onclick="checkPhase2()">Verificar Novos Custos</button>
+        <button onclick="handleCheckPhase2()">Verificar Novos Custos</button>
         <span id="feedback-p2" class="feedback"></span>
 
         <div id="phase2-table-challenge" style="display: none; margin-top: 20px;">
             <hr>
             <h3>Desafio 4: Compare os Mundos</h3>
-            <p>Preencha a tabela abaixo para comparar o que aconteceu. O computador preencherá os dados do outro país para você.</p>
+            <p>Preencha a tabela abaixo para comparar o que aconteceu. O computador preencherá os dados do outro país.</p>
             <table>
                 <tr>
                     <th></th>
@@ -106,178 +84,14 @@
                 </tr>
             </table>
             <br>
-            <button onclick="checkFinalTable()">Finalizar Simulação</button>
+            <button onclick="handleCheckTable()">Finalizar Simulação</button>
             <span id="feedback-table" class="feedback"></span>
         </div>
     </div>
 </div>
 
-<script>
-    // DADOS DA SIMULAÇÃO (Extraídos do seu PDF)
-    const data = {
-        'A': {
-            name: 'País A',
-            desc: 'Você é um país de economia agrária, muitos recursos naturais, população jovem e baixa sofisticação tecnológica.',
-            wCost: 2, sCost: 6,
-            tradeDesc: 'Você percebe que o País B produz aço a um custo menor. Você não mais produz aço e continua produzindo trigo, tanto para si quanto para exportar.',
-            produce: 'trigo', import: 'aço'
-        },
-        'B': {
-            name: 'País B',
-            desc: 'Você é um país de economia industrial, poucos recursos naturais, população mais idosa (porém produtiva), e alta sofisticação tecnológica.',
-            wCost: 3, sCost: 4,
-            tradeDesc: 'Você percebe que o País A produz trigo a um custo menor. Você não mais produz trigo e continua produzindo aço, tanto para si quanto para exportar.',
-            produce: 'aço', import: 'trigo'
-        }
-    };
-
-    let myC = '';
-    let otherC = '';
-
-    // NAVEGAÇÃO DE TELAS
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
-
-    // ESCOLHER PAÍS
-    function chooseCountry(choice) {
-        myC = choice;
-        otherC = choice === 'A' ? 'B' : 'A';
-        
-        document.getElementById('p1-title').innerText = data[myC].name;
-        document.getElementById('p1-desc').innerText = data[myC].desc;
-        document.getElementById('cost-wheat').innerText = data[myC].wCost;
-        document.getElementById('cost-steel').innerText = data[myC].sCost;
-        
-        showScreen('screen-phase1');
-    }
-
-    // VERIFICAR CUSTOS FASE 1
-    function checkPhase1() {
-        const w10 = parseInt(document.getElementById('input-10-wheat').value);
-        const s8 = parseInt(document.getElementById('input-8-steel').value);
-        
-        const correctW10 = 10 * data[myC].wCost;
-        const correctS8 = 8 * data[myC].sCost;
-
-        const feedback = document.getElementById('feedback-p1');
-        if (w10 === correctW10 && s8 === correctS8) {
-            feedback.innerText = "Correto! Agora vamos traçar o gráfico.";
-            feedback.className = "feedback success";
-            document.getElementById('phase1-chart-challenge').style.display = "block";
-        } else {
-            feedback.innerText = "Ops! Revise seus cálculos de multiplicação.";
-            feedback.className = "feedback error";
-        }
-    }
-
-    // VERIFICAR GRÁFICO (INTERCEPTOS 60UM) FASE 1
-    function checkPhase1Chart() {
-        const maxW = parseFloat(document.getElementById('input-max-wheat').value);
-        const maxS = parseFloat(document.getElementById('input-max-steel').value);
-        
-        const correctMaxW = 60 / data[myC].wCost;
-        const correctMaxS = 60 / data[myC].sCost;
-
-        const feedback = document.getElementById('feedback-p1-chart');
-        if (maxW === correctMaxW && maxS === correctMaxS) {
-            feedback.innerText = "Perfeito! Você encontrou os limites da sua fronteira de produção. Vamos avançar no tempo...";
-            feedback.className = "feedback success";
-            setTimeout(setupPhase2, 2000);
-        } else {
-            feedback.innerText = "Incorreto. Divida os 60 UM pelo custo unitário de cada bem.";
-            feedback.className = "feedback error";
-        }
-    }
-
-    // PREPARAR TELA FASE 2
-    function setupPhase2() {
-        document.getElementById('p2-trade-desc').innerText = data[myC].tradeDesc;
-        
-        if(myC === 'A') {
-            document.getElementById('p2-question-1').innerHTML = `Quanto lhe custou agora <strong>Produzir 10 Ton de trigo?</strong> <input type="number" id="trade-q1"> UM`;
-            document.getElementById('p2-question-2').innerHTML = `Quanto lhe custou agora <strong>Importar 8 Ton de aço</strong> (pagando o preço de custo do País B)? <input type="number" id="trade-q2"> UM`;
-        } else {
-            document.getElementById('p2-question-1').innerHTML = `Quanto lhe custou agora <strong>Importar 10 Ton de trigo</strong> (pagando o preço de custo do País A)? <input type="number" id="trade-q1"> UM`;
-            document.getElementById('p2-question-2').innerHTML = `Quanto lhe custou agora <strong>Produzir 8 Ton de aço?</strong> <input type="number" id="trade-q2"> UM`;
-        }
-        
-        showScreen('screen-phase2');
-    }
-
-    // VERIFICAR CUSTOS FASE 2
-    function checkPhase2() {
-        const q1 = parseInt(document.getElementById('trade-q1').value);
-        const q2 = parseInt(document.getElementById('trade-q2').value);
-        
-        let correctQ1, correctQ2;
-        if(myC === 'A') {
-            correctQ1 = 10 * data['A'].wCost; // Produz trigo
-            correctQ2 = 8 * data['B'].sCost;  // Importa aço de B
-        } else {
-            correctQ1 = 10 * data['A'].wCost; // Importa trigo de A
-            correctQ2 = 8 * data['B'].sCost;  // Produz aço
-        }
-
-        const feedback = document.getElementById('feedback-p2');
-        if (q1 === correctQ1 && q2 === correctQ2) {
-            feedback.innerText = "Exato! O comércio mudou seus custos totais.";
-            feedback.className = "feedback success";
-            setupFinalTable();
-        } else {
-            feedback.innerText = "Erro. Lembre-se que agora você paga o custo de produção do outro país ao importar!";
-            feedback.className = "feedback error";
-        }
-    }
-
-    // PREPARAR TABELA FINAL
-    function setupFinalTable() {
-        document.getElementById('phase2-table-challenge').style.display = "block";
-        document.getElementById('table-my-country').innerText = myC;
-        document.getElementById('table-other-country').innerText = otherC;
-
-        // O computador (Outro País) preenche seus próprios dados!
-        const otherM1 = (10 * data[otherC].wCost) + (8 * data[otherC].sCost);
-        let otherM2 = 0;
-        
-        if (otherC === 'A') {
-            otherM2 = (10 * data['A'].wCost) + (8 * data['B'].sCost);
-        } else {
-            otherM2 = (10 * data['A'].wCost) + (8 * data['B'].sCost);
-        }
-
-        document.getElementById('table-m1-other').innerText = otherM1;
-        document.getElementById('table-m2-other').innerText = otherM2;
-    }
-
-    // VERIFICAR TABELA FINAL
-    function checkFinalTable() {
-        const myM1 = parseInt(document.getElementById('table-m1-me').value);
-        const myM2 = parseInt(document.getElementById('table-m2-me').value);
-        const totalM1 = parseInt(document.getElementById('table-m1-total').value);
-        const totalM2 = parseInt(document.getElementById('table-m2-total').value);
-
-        const correctMyM1 = (10 * data[myC].wCost) + (8 * data[myC].sCost);
-        let correctMyM2 = (10 * data['A'].wCost) + (8 * data['B'].sCost); 
-
-        const otherM1 = parseInt(document.getElementById('table-m1-other').innerText);
-        const otherM2 = parseInt(document.getElementById('table-m2-other').innerText);
-
-        const correctTotalM1 = correctMyM1 + otherM1;
-        const correctTotalM2 = correctMyM2 + otherM2;
-
-        const feedback = document.getElementById('feedback-table');
-        
-        if (myM1 === correctMyM1 && myM2 === correctMyM2 && totalM1 === correctTotalM1 && totalM2 === correctTotalM2) {
-            feedback.innerText = "Parabéns! Você provou matematicamente a Teoria das Vantagens Comparativas: o mundo como um todo gastou menos recursos (UM) para obter os mesmos bens!";
-            feedback.className = "feedback success";
-        } else {
-            feedback.innerText = "Ainda há erros na tabela. Lembre-se que o valor do seu país é a soma do que você calculou no Desafio 1 (para o Mundo 1) e no Desafio 3 (para o Mundo 2).";
-            feedback.className = "feedback error";
-        }
-    }
-</script>
+<script src="assets/engine.js"></script>
+<script src="assets/ui.js"></script>
 
 </body>
 </html>
