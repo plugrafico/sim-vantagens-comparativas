@@ -2,52 +2,58 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Simulação Econômica: Dinâmicas de Comércio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Fronteiras de Produção</title>
     <link rel="stylesheet" href="assets/css/main.css">
-    <!-- Chart.js para renderizar as curvas de produção -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
-        <h1>Simulador de Dinâmica Econômica</h1>
+        <h1>Dinâmicas Econômicas: Países A e B</h1>
+        <p>Selecione um país para começar o exercício</p>
         <div id="country-selector">
-            <button onclick="ui.selectCountry('A')">Assumir País A (Agrário)</button>
-            <button onclick="ui.selectCountry('B')">Assumir País B (Industrial)</button>
+            <button onclick="ui.selectCountry('A')">Assumir País A (Trigo: 2 | Aço: 6)</button>
+            <button onclick="ui.selectCountry('B')">Assumir País B (Trigo: 3 | Aço: 4)</button>
         </div>
     </header>
 
-    <main id="app" style="display:none;">
-        <section id="dashboard">
+    <main id="app" style="display:none; padding: 20px;">
+        <div id="dashboard">
             <div class="stats-card">
-                <h2 id="country-name">País</h2>
-                <p id="country-desc"></p>
+                <h2 id="country-name"></h2>
+                <p id="country-desc" style="font-style: italic;"></p>
                 <div id="costs-display">
-                    <p>Custo Trigo: <span id="cost-wheat"></span> UM</p>
-                    <p>Custo Aço: <span id="cost-steel"></span> UM</p>
+                    <p>Custo de Produção Doméstica:</p>
+                    <ul>
+                        <li>1 Ton Trigo: <strong id="cost-wheat"></strong> UM</li>
+                        <li>1 Ton Aço: <strong id="cost-steel"></strong> UM</li>
+                    </ul>
                 </div>
             </div>
 
             <div class="chart-container">
                 <canvas id="productionChart"></canvas>
             </div>
-        </section>
+        </div>
 
-        <section id="trade-sim">
-            <h3>Cenário de Mundo: Isolamento vs. Comércio</h3>
-            <table id="results-table">
+        <div id="trade-sim" style="margin-top: 30px; border-top: 2px solid #ccc; padding-top: 20px;">
+            <h3>Simulação de Mundo 2: Comércio Internacional</h3>
+            <p>Objetivo: Consumir 10 Ton de Trigo e 8 Ton de Aço.</p>
+            <button onclick="engine.runTradeSimulation()" style="padding: 10px 20px; cursor: pointer;">Calcular Ganhos de Troca</button>
+            
+            <table>
                 <thead>
                     <tr>
-                        <th>Produto</th>
+                        <th>Métrica</th>
                         <th>Mundo 1 (Isolado)</th>
                         <th>Mundo 2 (Comércio)</th>
                     </tr>
                 </thead>
                 <tbody id="comparison-body">
-                    <!-- Preenchido via JS -->
+                    <!-- Dados inseridos pelo engine.js -->
                 </tbody>
             </table>
-            <button id="trade-btn" onclick="engine.runTradeSimulation()">Simular Comércio Internacional</button>
-        </section>
+        </div>
     </main>
 
     <script src="assets/js/engine.js"></script>
